@@ -1,0 +1,6 @@
+{
+  "name": "Portal Warga RW",
+  "description": "Aplikasi portal interaktif warga RW dengan fitur pengaduan real-time, peta wilayah, galeri kegiatan, notifikasi instan, dan panel administrasi.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
