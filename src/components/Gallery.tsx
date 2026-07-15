@@ -10,7 +10,7 @@ interface GalleryProps {
   rwTitle?: string;
 }
 
-export default function Gallery({ galleryItems, setGalleryItems, currentUser, rwTitle = 'RW 05' }: GalleryProps) {
+export default function Gallery({ galleryItems, setGalleryItems, currentUser, rwTitle = 'RW 07' }: GalleryProps) {
   const [activeFilter, setActiveFilter] = useState('Semua');
   const [showAddModal, setShowAddModal] = useState(false);
   const [likedItems, setLikedItems] = useState<string[]>([]);
@@ -83,8 +83,8 @@ export default function Gallery({ galleryItems, setGalleryItems, currentUser, rw
       {/* 1. Header and Actions */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-slate-100 dark:border-slate-800 pb-6">
         <div>
-          <h1 className="text-3xl font-black text-slate-800 dark:text-slate-100 tracking-tight flex items-center">
-            <Sparkles className="w-8 h-8 text-indigo-600 dark:text-indigo-400 mr-2 shrink-0 animate-pulse" />
+          <h1 className="text-xl sm:text-2xl font-display font-bold text-slate-800 dark:text-slate-100 tracking-tight flex items-center">
+            <Sparkles className="w-6 h-6 text-indigo-600 dark:text-indigo-400 mr-2 shrink-0 animate-pulse" />
             Galeri Kegiatan {rwTitle}
           </h1>
           <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">Dokumentasi momen gotong royong, posyandu, dan kemeriahan aktivitas warga sekitar.</p>

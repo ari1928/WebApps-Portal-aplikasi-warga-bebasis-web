@@ -11,11 +11,11 @@ interface ContactProps {
 }
 
 export default function Contact({
-  contactAddress = 'Balai RW 05, Jl. Kenanga No. 12, Desa Mekar Wangi, RT 03/RW 05, Jawa Barat',
+  contactAddress = 'Balai RW 07, Jl. Palmeriam Raya, Kel. Palmeriam, Kec. Matraman, RT 03/RW 07, Jakarta Timur',
   contactPhone = '0811-2233-4455',
-  contactEmail = 'sekretariat@rw05.warga.id',
+  contactEmail = 'sekretariat@rw07.warga.id',
   contactHours = 'Senin - Sabtu pukul 15:00 - 20:00 WIB',
-  rwTitle = 'RW 05',
+  rwTitle = 'RW 07',
 }: ContactProps) {
   const cleanWaNumber = contactPhone.replace(/[^0-9]/g, '').replace(/^0/, '62');
 
@@ -55,7 +55,7 @@ export default function Contact({
       
       {/* 1. Header Title */}
       <div className="text-center space-y-3">
-        <h1 className="text-3xl sm:text-5xl font-black text-slate-800 dark:text-slate-100 tracking-tight">Hubungi Pengurus RW</h1>
+        <h1 className="text-2xl sm:text-4xl font-display font-bold text-slate-800 dark:text-slate-100 tracking-tight">Hubungi Pengurus RW</h1>
         <p className="text-slate-500 dark:text-slate-400 max-w-2xl mx-auto text-sm sm:text-base leading-relaxed">
           Punya pertanyaan terkait pengurusan surat domisili, iuran, saran keamanan, atau membutuhkan bantuan darurat? Hubungi kami langsung.
         </p>
@@ -163,6 +163,16 @@ export default function Contact({
                   <option>RT 02</option>
                   <option>RT 03</option>
                   <option>RT 04</option>
+                  <option>RT 05</option>
+                  <option>RT 06</option>
+                  <option>RT 07</option>
+                  <option>RT 08</option>
+                  <option>RT 09</option>
+                  <option>RT 10</option>
+                  <option>RT 11</option>
+                  <option>RT 12</option>
+                  <option>RT 13</option>
+                  <option>RT 14</option>
                   <option>Luar Wilayah</option>
                 </select>
               </div>

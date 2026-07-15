@@ -33,6 +33,52 @@ app.get("/api/health", (req, res) => {
   res.json({ status: "ok", hasApiKey: !!apiKey });
 });
 
+app.post("/api/maps/query", async (req, res) => {
+  try {
+    const { prompt, latitude, longitude } = req.body;
+    if (!prompt) {
+      return res.status(400).json({ error: "Pertanyaan wajib diisi" });
+    }
+
+    if (!ai) {
+      return res.json({
+        text: "Kunci API Gemini (GEMINI_API_KEY) belum dikonfigurasi. Silakan aktifkan di panel Settings > Secrets untuk mencoba asisten peta AI interaktif berbasis peta nyata.",
+        chunks: []
+      });
+    }
+
+    // Default coordinates to Palmeriam, Jakarta Timur
+    const lat = latitude || -6.2069;
+    const lng = longitude || 106.8576;
+
+    const response = await ai.models.generateContent({
+      model: "gemini-3.5-flash",
+      contents: prompt,
+      config: {
+        systemInstruction: "Anda adalah asisten virtual wilayah RW 07 Palmeriam, Jakarta Timur. Jawablah pertanyaan warga mengenai geografi, lokasi tempat penting (rumah sakit, puskesmas, pos polisi, sekolah, tempat makan, halte busway, minimarket, masjid, dll), rute perjalanan, atau informasi fasilitas umum di sekitar wilayah Palmeriam, Matraman, Jakarta Timur dan sekitarnya dengan ramah, akurat, informatif, dan jelas dalam Bahasa Indonesia. Manfaatkan data Google Maps untuk memberikan rekomendasi lokasi yang benar-benar ada.",
+        tools: [{ googleMaps: {} }],
+        toolConfig: {
+          retrievalConfig: {
+            latLng: {
+              latitude: lat,
+              longitude: lng
+            }
+          }
+        }
+      }
+    });
+
+    const text = response.text || "Maaf, saya tidak dapat menemukan informasi untuk pertanyaan tersebut.";
+    const chunks = response.candidates?.[0]?.groundingMetadata?.groundingChunks || [];
+
+    res.json({ text, chunks });
+
+  } catch (error: any) {
+    console.error("Error in /api/maps/query:", error);
+    res.status(500).json({ error: error.message || "Gagal memproses kueri peta." });
+  }
+});
+
 app.post("/api/avatar/generate", async (req, res) => {
   try {
     const { prompt } = req.body;

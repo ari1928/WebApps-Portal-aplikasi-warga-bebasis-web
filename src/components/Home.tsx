@@ -52,7 +52,7 @@ const DOCUMENTATION_SLIDES = [
     id: 'slide-3',
     title: 'Rapat Musyawarah Rencana Kerja Bakti HUT RI',
     category: 'Rapat Warga',
-    description: 'Musyawarah bersama pengurus RW 05 dan para ketua RT untuk membahas persiapan kerja bakti akbar, perlombaan tradisional, dan panggung gembira kemerdekaan.',
+    description: 'Musyawarah bersama pengurus RW 07 dan para ketua RT untuk membahas persiapan kerja bakti akbar, perlombaan tradisional, dan panggung gembira kemerdekaan.',
     imageUrl: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&q=80&w=1200',
     date: '05 Juli 2026',
     initialLikes: 15,
@@ -60,7 +60,7 @@ const DOCUMENTATION_SLIDES = [
   },
   {
     id: 'slide-4',
-    title: 'Senam Pagi Kebugaran Keluarga RW 05',
+    title: 'Senam Pagi Kebugaran Keluarga RW 07',
     category: 'Olahraga & Sosial',
     description: 'Ratusan warga berpartisipasi dalam senam kebugaran jasmani bersama instruktur profesional di halaman Balai RW untuk menjaga imunitas dan kebersamaan.',
     imageUrl: 'https://images.unsplash.com/photo-1511632765486-a01980e01a18?auto=format&fit=crop&q=80&w=1200',
@@ -76,8 +76,8 @@ export default function Home({
   currentUser,
   setActiveTab,
   onLoginClick,
-  rwTitle = 'RW 05',
-  rwSubTitle = 'Mekar Wangi',
+  rwTitle = 'RW 07',
+  rwSubTitle = 'Palmeriam',
   rwLogoUrl = '',
 }: HomeProps & { rwTitle?: string; rwSubTitle?: string; rwLogoUrl?: string }) {
   // Statistics Calculations
@@ -199,7 +199,7 @@ export default function Home({
                     </span>
                   </div>
 
-                  <h3 className="text-base sm:text-2xl md:text-3xl font-black tracking-tight leading-snug max-w-3xl text-white">
+                  <h3 className="text-base sm:text-2xl md:text-3xl font-display font-extrabold tracking-tight leading-snug max-w-3xl text-white">
                     {DOCUMENTATION_SLIDES[currentSlide].title}
                   </h3>
 
@@ -301,7 +301,7 @@ export default function Home({
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.1 }}
-                className="text-3xl sm:text-5xl md:text-6xl font-black tracking-tight leading-tight text-white"
+                className="text-2xl sm:text-4xl md:text-5xl font-display font-extrabold tracking-tight leading-tight text-white"
               >
                 Gotong Royong & <br />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-300 via-indigo-200 to-emerald-300">
@@ -431,7 +431,7 @@ export default function Home({
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
                 <Megaphone className="w-5 h-5 sm:w-6 sm:h-6 text-indigo-600 dark:text-indigo-400" />
-                <h2 className="text-xl sm:text-2xl font-black text-slate-800 dark:text-slate-100">Pengumuman Terkini</h2>
+                <h2 className="text-lg sm:text-xl font-display font-bold text-slate-800 dark:text-slate-100">Pengumuman Terkini</h2>
               </div>
               <span className="text-xs font-bold bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-300 px-3 py-1 rounded-full border border-indigo-100 dark:border-indigo-900/50">{rwTitle}</span>
             </div>
@@ -468,10 +468,21 @@ export default function Home({
 
                   <h3 className="text-base sm:text-lg font-bold text-slate-800 dark:text-slate-100 mb-2 leading-snug">{ann.title}</h3>
                   <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed mb-4">{ann.content}</p>
+
+                  {ann.imageUrl && (
+                    <div className="mb-4 rounded-xl overflow-hidden max-h-64 sm:max-h-80 border border-slate-200 dark:border-slate-700/60 shadow-sm group">
+                      <img 
+                        src={ann.imageUrl} 
+                        alt={ann.title} 
+                        className="w-full h-full object-cover max-h-64 sm:max-h-80 hover:scale-102 transition-transform duration-300 ease-out" 
+                        referrerPolicy="no-referrer"
+                      />
+                    </div>
+                  )}
                   
                   <div className="flex justify-between items-center text-[10px] sm:text-xs text-slate-400 dark:text-slate-500 font-semibold pt-3 border-t border-slate-550/30 dark:border-slate-700/50">
                     <span>Oleh: <strong className="text-slate-600 dark:text-slate-300 font-bold">{ann.author}</strong></span>
-                    <span>Admin RW 05</span>
+                    <span>Admin {rwTitle}</span>
                   </div>
                 </motion.div>
               ))}
@@ -481,7 +492,7 @@ export default function Home({
           {/* Quick Info & Services Menu - Right 4 Cols */}
           <div className="lg:col-span-4 space-y-6">
             <div>
-              <h2 className="text-xl sm:text-2xl font-black text-slate-800 dark:text-slate-100 mb-4 sm:mb-6">Layanan Cepat</h2>
+              <h2 className="text-lg sm:text-xl font-display font-bold text-slate-800 dark:text-slate-100 mb-4">Layanan Cepat</h2>
               <div className="space-y-4.5" id="quick-services-box">
                 {[
                   {
@@ -530,7 +541,7 @@ export default function Home({
                 Highlight Wilayah {rwTitle}
               </h3>
               <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
-                Wilayah kami terdiri dari 4 Rukun Tetangga (RT 01 s/d RT 04) dengan pusat administrasi di Balai {rwTitle}.
+                Wilayah kami terdiri dari 14 Rukun Tetangga (RT 01 s/d RT 14) dengan pusat administrasi di Balai {rwTitle}.
                 Seluruh pengaduan terpetakan berdasarkan RT masing-masing.
               </p>
               <button

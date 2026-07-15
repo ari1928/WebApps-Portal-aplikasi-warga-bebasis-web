@@ -16,6 +16,7 @@ interface NavbarProps {
   rwTitle?: string;
   rwSubTitle?: string;
   rwLogoUrl?: string;
+  isSheetsConnected?: boolean;
 }
 
 export default function Navbar({
@@ -28,9 +29,10 @@ export default function Navbar({
   onNotificationsClick,
   isDarkMode,
   toggleDarkMode,
-  rwTitle = 'RW 05',
-  rwSubTitle = 'Mekar Wangi',
+  rwTitle = 'RW 07',
+  rwSubTitle = 'Palmeriam',
   rwLogoUrl = '',
+  isSheetsConnected = false,
 }: NavbarProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -43,9 +45,9 @@ export default function Navbar({
   ];
 
   return (
-    <nav className="bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 sticky top-0 z-50 shadow-sm transition-colors duration-300" id="main-navbar">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between h-16">
+    <nav className="bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border border-slate-150/80 dark:border-slate-800/80 sticky top-3 sm:top-4 mt-3 z-50 shadow-md shadow-slate-100/50 dark:shadow-none transition-all duration-300 mx-auto w-[94%] sm:w-[96%] max-w-5xl rounded-2xl overflow-hidden" id="main-navbar">
+      <div className="px-4 sm:px-6">
+        <div className="flex justify-between h-13 sm:h-14">
           {/* Logo Section */}
           <div className="flex items-center">
             <div 
@@ -53,28 +55,34 @@ export default function Navbar({
               onClick={() => setActiveTab('home')}
               id="navbar-logo-container"
             >
-              <div className="relative mr-2.5 flex items-center">
-                <div className="absolute inset-0 bg-indigo-500/20 rounded-xl blur-sm group-hover:bg-indigo-500/30 transition-all duration-300" />
-                <div className="relative bg-gradient-to-tr from-indigo-600 to-violet-600 p-2 rounded-xl text-white font-bold shadow-md shadow-indigo-100 flex items-center justify-center border border-indigo-400/20">
+              <div className="relative mr-2 flex items-center">
+                <div className="absolute inset-0 bg-indigo-500/20 rounded-lg blur-sm group-hover:bg-indigo-500/30 transition-all duration-300" />
+                <div className="relative bg-gradient-to-tr from-indigo-600 to-violet-600 p-1.5 rounded-lg text-white font-bold shadow-sm shadow-indigo-100 flex items-center justify-center border border-indigo-400/20">
                   {rwLogoUrl ? (
-                    <img src={rwLogoUrl} alt="Logo" className="w-5 h-5 rounded object-cover" referrerPolicy="no-referrer" />
+                    <img src={rwLogoUrl} alt="Logo" className="w-4 h-4 sm:w-4.5 sm:h-4.5 rounded object-cover" referrerPolicy="no-referrer" />
                   ) : (
-                    <ShieldCheck className="w-5 h-5 text-white" />
+                    <ShieldCheck className="w-4 h-4 sm:w-4.5 sm:h-4.5 text-white" />
                   )}
                 </div>
               </div>
               <div className="flex flex-col text-left">
                 <div className="flex items-center">
-                  <span className="font-black text-base sm:text-lg tracking-tight text-slate-800 dark:text-slate-100 leading-none">PORTAL</span>
-                  <span className="text-indigo-600 font-black text-base sm:text-lg ml-1 leading-none">{rwTitle}</span>
+                  <span className="font-black text-sm sm:text-base tracking-tight text-slate-800 dark:text-slate-100 leading-none">PORTAL</span>
+                  <span className="text-indigo-600 font-black text-sm sm:text-base ml-1 leading-none">{rwTitle}</span>
                 </div>
-                <span className="text-[9px] font-bold text-slate-400 dark:text-slate-500 tracking-wider uppercase mt-0.5 leading-none">{rwSubTitle}</span>
+                <span className="text-[8px] font-bold text-slate-400 dark:text-slate-500 tracking-wider uppercase mt-0.5 leading-none">{rwSubTitle}</span>
               </div>
             </div>
+            {isSheetsConnected && (
+              <div className="hidden lg:flex items-center space-x-1.5 ml-4 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-100 dark:border-emerald-900/40 px-2.5 py-0.5 rounded-full text-[9px] text-emerald-700 dark:text-emerald-400 font-bold" id="navbar-sheets-sync-pill">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                <span>Sheets Connected</span>
+              </div>
+            )}
           </div>
 
           {/* Desktop Nav Items */}
-          <div className="hidden md:flex items-center space-x-1 lg:space-x-3">
+          <div className="hidden md:flex items-center space-x-0.5 lg:space-x-1.5">
             {navItems.map((item) => {
               const Icon = item.icon;
               const isActive = activeTab === item.id;
@@ -82,14 +90,14 @@ export default function Navbar({
                 <button
                   key={item.id}
                   onClick={() => setActiveTab(item.id)}
-                  className={`flex items-center px-3 py-2 rounded-lg text-sm font-semibold transition-all duration-200 ${
+                  className={`flex items-center px-2.5 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 ${
                     isActive
                       ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-950/40 dark:text-indigo-300'
                       : 'text-slate-600 hover:bg-slate-50 hover:text-indigo-600 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-indigo-400'
                   }`}
                   id={`nav-item-${item.id}`}
                 >
-                  <Icon className="w-4 h-4 mr-1.5" />
+                  <Icon className="w-3.5 h-3.5 mr-1" />
                   {item.label}
                 </button>
               );
@@ -97,15 +105,15 @@ export default function Navbar({
           </div>
 
           {/* Right Side Controls */}
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-1.5 sm:space-x-2">
             {/* Global Dark Mode Toggle */}
             <button
               onClick={toggleDarkMode}
-              className="p-2 text-slate-400 hover:text-indigo-600 dark:hover:text-amber-400 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-xl transition-all duration-200"
+              className="p-1.5 text-slate-400 hover:text-indigo-600 dark:hover:text-amber-400 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg transition-all duration-200"
               title={isDarkMode ? 'Aktifkan Mode Terang' : 'Aktifkan Mode Gelap'}
               id="dark-mode-toggle-btn"
             >
-              {isDarkMode ? <Sun className="w-5 h-5 text-amber-500" /> : <Moon className="w-5 h-5" />}
+              {isDarkMode ? <Sun className="w-4 h-4 text-amber-500" /> : <Moon className="w-4 h-4" />}
             </button>
 
             {currentUser ? (
@@ -113,62 +121,62 @@ export default function Navbar({
                 {/* Citizen/Admin Portal Buttons */}
                 <button
                   onClick={() => setActiveTab(currentUser.role === 'admin' ? 'admin' : 'citizen')}
-                  className={`flex items-center px-3 py-1.5 text-xs font-semibold rounded-full border transition-all duration-200 ${
+                  className={`flex items-center px-2.5 py-1 text-[10px] font-bold rounded-full border transition-all duration-200 ${
                     currentUser.role === 'admin'
-                      ? 'bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100'
-                      : 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100'
+                      ? 'bg-amber-50 text-amber-700 border-amber-250 dark:bg-amber-950/40 dark:text-amber-300 border-amber-200/50 hover:bg-amber-100/50'
+                      : 'bg-emerald-50 text-emerald-700 border-emerald-250 dark:bg-emerald-950/40 dark:text-emerald-300 border-emerald-200/50 hover:bg-emerald-100/50'
                   }`}
                   id="nav-role-button"
                 >
-                  <FileText className="w-3.5 h-3.5 mr-1" />
-                  {currentUser.role === 'admin' ? 'Panel Admin' : 'Layanan Warga'}
+                  <FileText className="w-3 h-3 mr-1" />
+                  {currentUser.role === 'admin' ? 'Admin' : 'Layanan'}
                 </button>
 
                 {/* Notifications Bell */}
                 <button
                   onClick={onNotificationsClick}
-                  className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-slate-50 rounded-full relative transition-all duration-200"
+                  className="p-1.5 text-slate-400 hover:text-indigo-600 hover:bg-slate-50 rounded-full relative transition-all duration-200"
                   id="notifications-bell-btn"
                 >
-                  <Bell className="w-5 h-5" />
+                  <Bell className="w-4 h-4" />
                   {notificationsCount > 0 && (
-                    <span className="absolute top-1.5 right-1.5 block h-4 w-4 rounded-full ring-2 ring-white bg-rose-500 text-[10px] font-bold text-white text-center leading-4">
+                    <span className="absolute top-1 right-1 block h-3.5 w-3.5 rounded-full ring-2 ring-white dark:ring-slate-900 bg-rose-500 text-[8px] font-bold text-white text-center leading-3.5">
                       {notificationsCount}
                     </span>
                   )}
                 </button>
 
                 {/* User Dropdown Profile Summary */}
-                <div className="flex items-center space-x-2 pl-2 border-l border-slate-100">
+                <div className="flex items-center space-x-1.5 pl-1.5 border-l border-slate-100 dark:border-slate-800">
                   <img
                     src={currentUser.avatarUrl}
                     alt={currentUser.name}
-                    className="w-8 h-8 rounded-full object-cover border-2 border-indigo-100 cursor-pointer"
+                    className="w-7 h-7 rounded-full object-cover border-2 border-indigo-100 dark:border-indigo-900/40 cursor-pointer"
                     onClick={() => setActiveTab(currentUser.role === 'admin' ? 'admin' : 'citizen')}
                     id="navbar-profile-pic"
                   />
                   <div className="hidden lg:block text-left cursor-pointer" onClick={() => setActiveTab(currentUser.role === 'admin' ? 'admin' : 'citizen')}>
-                    <div className="text-xs font-bold text-slate-800 line-clamp-1">{currentUser.name}</div>
-                    <div className="text-[10px] text-slate-500 font-semibold">{currentUser.role === 'admin' ? 'Administrator' : currentUser.rt}</div>
+                    <div className="text-[10px] font-bold text-slate-800 dark:text-slate-200 line-clamp-1 leading-none">{currentUser.name}</div>
+                    <div className="text-[8px] text-slate-400 dark:text-slate-500 font-semibold mt-0.5 leading-none">{currentUser.role === 'admin' ? 'Administrator' : currentUser.rt}</div>
                   </div>
                   <button
                     onClick={onLogout}
-                    className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-all duration-150"
+                    className="p-1 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-all duration-150"
                     title="Keluar"
                     id="logout-btn"
                   >
-                    <LogOut className="w-4 h-4" />
+                    <LogOut className="w-3.5 h-3.5" />
                   </button>
                 </div>
               </>
             ) : (
               <button
                 onClick={onLoginClick}
-                className="flex items-center px-2.5 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white font-extrabold text-[10px] uppercase tracking-wider rounded-lg transition-all duration-200 shadow-sm hover:shadow hover:scale-[1.02] active:scale-[0.98] min-h-[30px]"
+                className="flex items-center px-2 py-1 bg-indigo-600 hover:bg-indigo-500 text-white font-extrabold text-[9px] uppercase tracking-wider rounded-lg transition-all duration-200 shadow-sm hover:shadow hover:scale-[1.02] active:scale-[0.98] min-h-[28px]"
                 id="login-trigger-btn"
               >
-                <LogIn className="w-3 h-3 mr-1" />
-                Masuk Akun
+                <LogIn className="w-2.5 h-2.5 mr-1" />
+                Masuk
               </button>
             )}
 
@@ -176,11 +184,11 @@ export default function Navbar({
             <div className="flex items-center md:hidden">
               <button
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="inline-flex items-center justify-center p-2 rounded-md text-slate-400 hover:text-indigo-600 hover:bg-slate-50 focus:outline-none"
+                className="inline-flex items-center justify-center p-1.5 rounded-lg text-slate-400 hover:text-indigo-600 hover:bg-slate-50 dark:hover:bg-slate-800 focus:outline-none"
                 id="mobile-menu-toggle"
               >
                 <span className="sr-only">Open main menu</span>
-                <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   {mobileMenuOpen ? (
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                   ) : (
@@ -200,7 +208,7 @@ export default function Navbar({
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="md:hidden bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 shadow-inner transition-colors duration-300"
+            className="md:hidden bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800 shadow-inner transition-colors duration-300"
             id="mobile-nav-menu"
           >
             {/* Primary Nav Links */}

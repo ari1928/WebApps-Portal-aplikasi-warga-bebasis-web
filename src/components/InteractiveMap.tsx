@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { MapFeature, Report } from '../types';
 import { INITIAL_MAP_FEATURES } from '../data';
-import { MapPin, Info, Tag, AlertCircle, Shield, Building, Compass, Sparkles, X, CheckCircle, Clock } from 'lucide-react';
+import { MapPin, Info, Tag, AlertCircle, Shield, Building, Compass, Sparkles, X, CheckCircle, Clock, Send, MessageSquare, Loader2, Search, Map } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
 interface InteractiveMapProps {
@@ -14,6 +14,104 @@ export default function InteractiveMap({ reports }: InteractiveMapProps) {
   const [activeTab, setActiveTab] = useState<'semua' | 'fasilitas' | 'keamanan' | 'pengaduan'>('semua');
   const [hoveredRt, setHoveredRt] = useState<string | null>(null);
 
+  // New Modes & Tab states
+  const [mapMode, setMapMode] = useState<'schematic' | 'google'>('schematic');
+  const [rightTab, setRightTab] = useState<'info' | 'assistant'>('info');
+
+  // AI Assistant states
+  const [aiQuery, setAiQuery] = useState('');
+  const [aiMessages, setAiMessages] = useState<Array<{ sender: 'user' | 'assistant'; text: string; chunks?: any[] }>>([
+    {
+      sender: 'assistant',
+      text: 'Halo! Saya Asisten Peta AI RW 07 Palmeriam. Tanyakan apa saja mengenai rute, lokasi penting, fasilitas kesehatan, tempat makan, halte busway, atau tempat menarik lainnya di sekitar Palmeriam dan Matraman! Jawaban saya didukung oleh pencarian Google Maps nyata secara real-time.'
+    }
+  ]);
+  const [aiLoading, setAiLoading] = useState(false);
+  const messagesEndRef = useRef<HTMLDivElement | null>(null);
+
+  // Scroll to bottom of chat
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [aiMessages, aiLoading]);
+
+  // AI assistant handlers
+  const handleSendQuery = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!aiQuery.trim() || aiLoading) return;
+
+    const userText = aiQuery.trim();
+    setAiQuery('');
+    setAiMessages(prev => [...prev, { sender: 'user', text: userText }]);
+    setAiLoading(true);
+
+    try {
+      // Default coordinates to Palmeriam, Jakarta Timur
+      let lat = -6.2069;
+      let lng = 106.8576;
+      
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            fetchAiResponse(userText, position.coords.latitude, position.coords.longitude);
+          },
+          () => {
+            fetchAiResponse(userText, lat, lng);
+          },
+          { timeout: 4000 }
+        );
+      } else {
+        fetchAiResponse(userText, lat, lng);
+      }
+    } catch (error) {
+      console.error(error);
+      setAiLoading(false);
+    }
+  };
+
+  const fetchAiResponse = async (query: string, lat: number, lng: number) => {
+    try {
+      const res = await fetch('/api/maps/query', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt: query, latitude: lat, longitude: lng }),
+      });
+
+      if (!res.ok) {
+        throw new Error('Gagal menghubungi asisten AI');
+      }
+
+      const data = await res.json();
+      setAiMessages(prev => [...prev, {
+        sender: 'assistant',
+        text: data.text,
+        chunks: data.chunks
+      }]);
+    } catch (err: any) {
+      setAiMessages(prev => [...prev, {
+        sender: 'assistant',
+        text: 'Maaf, terjadi kesalahan koneksi dengan server AI. Silakan coba sesaat lagi.'
+      }]);
+    } finally {
+      setAiLoading(false);
+    }
+  };
+
+  const getChunkLink = (chunk: any) => {
+    if (chunk.maps) {
+      return {
+        uri: chunk.maps.uri || '',
+        title: chunk.maps.title || 'Buka di Google Maps'
+      };
+    }
+    if (chunk.web) {
+      return {
+        uri: chunk.web.uri || '',
+        title: chunk.web.title || 'Sumber Informasi'
+      };
+    }
+    return null;
+  };
+
   // Map features
   const staticFeatures = INITIAL_MAP_FEATURES;
 
@@ -21,16 +119,27 @@ export default function InteractiveMap({ reports }: InteractiveMapProps) {
   const getReportCoordinates = (report: Report, index: number) => {
     // Generate predictable coordinates based on RT and ID to place them neatly on the map
     const idHash = report.id.charCodeAt(report.id.length - 1) || index;
-    switch (report.rt) {
-      case 'RT 01': // Top Left sector
-        return { x: 15 + (idHash % 15), y: 15 + (idHash % 15) };
-      case 'RT 02': // Top Right sector
-        return { x: 60 + (idHash % 15), y: 15 + (idHash % 15) };
-      case 'RT 03': // Bottom Left sector
-        return { x: 20 + (idHash % 15), y: 65 + (idHash % 15) };
-      case 'RT 04': // Bottom Right sector
-      default:
-        return { x: 70 + (idHash % 15), y: 60 + (idHash % 15) };
+    const rtStr = report.rt;
+    
+    if (['RT 01', 'RT 05', 'RT 09', 'RT 13'].includes(rtStr)) {
+      // Sektor Barat (RT 01, 05, 09, 13)
+      return { x: 18 + (idHash % 20), y: 12 + (idHash % 20) };
+    } else if (['RT 02', 'RT 06', 'RT 10', 'RT 14'].includes(rtStr)) {
+      // Sektor Utara (RT 02, 06, 10, 14)
+      return { x: 58 + (idHash % 20), y: 12 + (idHash % 20) };
+    } else if (['RT 03', 'RT 07', 'RT 11'].includes(rtStr)) {
+      // Sektor Selatan (RT 03, 07, 11)
+      return { x: 18 + (idHash % 20), y: 58 + (idHash % 20) };
+    } else if (['RT 04', 'RT 08', 'RT 12'].includes(rtStr)) {
+      // Sektor Timur (RT 04, 08, 12)
+      return { x: 58 + (idHash % 20), y: 58 + (idHash % 20) };
+    } else {
+      // Default to randomized placement in some quadrant
+      const sector = idHash % 4;
+      if (sector === 0) return { x: 18 + (idHash % 20), y: 12 + (idHash % 20) };
+      if (sector === 1) return { x: 58 + (idHash % 20), y: 12 + (idHash % 20) };
+      if (sector === 2) return { x: 18 + (idHash % 20), y: 58 + (idHash % 20) };
+      return { x: 58 + (idHash % 20), y: 58 + (idHash % 20) };
     }
   };
 
@@ -80,11 +189,11 @@ export default function InteractiveMap({ reports }: InteractiveMapProps) {
       {/* 1. Header */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-slate-100 dark:border-slate-750 pb-6">
         <div>
-          <h1 className="text-3xl font-black text-slate-800 dark:text-slate-100 tracking-tight flex items-center">
-            <Compass className="w-8 h-8 text-indigo-600 dark:text-indigo-400 mr-2 shrink-0 animate-spin-slow" />
-            Peta Sektor Wilayah RW 05
+          <h1 className="text-xl sm:text-2xl font-display font-bold text-slate-800 dark:text-slate-100 tracking-tight flex items-center">
+            <Compass className="w-6 h-6 text-indigo-600 dark:text-indigo-400 mr-2 shrink-0 animate-spin-slow" />
+            Peta Sektor Wilayah RW 07
           </h1>
-          <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">Sistem pemetaan digital RT 01 - RT 04 terintegrasi penanda laporan pengaduan warga secara real-time.</p>
+          <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">Sistem pemetaan digital RT 01 - RT 14 terintegrasi penanda laporan pengaduan warga secara real-time.</p>
         </div>
 
         {/* Filters and legend */}
@@ -134,10 +243,10 @@ export default function InteractiveMap({ reports }: InteractiveMapProps) {
             <div className="absolute top-4 left-4 bg-white/95 dark:bg-slate-800/95 backdrop-blur-sm border border-slate-100 dark:border-slate-700 p-3 rounded-2xl shadow-md z-10 text-xs space-y-1.5">
               <h4 className="font-extrabold text-slate-800 dark:text-slate-100">Keterangan Sektor Wilayah</h4>
               <div className="space-y-1 text-[10px] font-semibold text-slate-500 dark:text-slate-400">
-                <div className="flex items-center"><span className="w-3.5 h-2.5 bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-800/50 rounded mr-1.5" />RT 01 (Sektor Barat)</div>
-                <div className="flex items-center"><span className="w-3.5 h-2.5 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/50 rounded mr-1.5" />RT 02 (Sektor Utara)</div>
-                <div className="flex items-center"><span className="w-3.5 h-2.5 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/50 rounded mr-1.5" />RT 03 (Sektor Selatan)</div>
-                <div className="flex items-center"><span className="w-3.5 h-2.5 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800/50 rounded mr-1.5" />RT 04 (Sektor Timur)</div>
+                <div className="flex items-center"><span className="w-3.5 h-2.5 bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-800/50 rounded mr-1.5" />Barat (RT 01, 05, 09, 13)</div>
+                <div className="flex items-center"><span className="w-3.5 h-2.5 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/50 rounded mr-1.5" />Utara (RT 02, 06, 10, 14)</div>
+                <div className="flex items-center"><span className="w-3.5 h-2.5 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/50 rounded mr-1.5" />Selatan (RT 03, 07, 11)</div>
+                <div className="flex items-center"><span className="w-3.5 h-2.5 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800/50 rounded mr-1.5" />Timur (RT 04, 08, 12)</div>
               </div>
             </div>
 
@@ -156,64 +265,88 @@ export default function InteractiveMap({ reports }: InteractiveMapProps) {
                 </defs>
                 <rect width="100%" height="100%" fill="url(#grid)" />
 
-                {/* RT 01 Area - Top Left */}
+                {/* Sektor Barat Area - Top Left */}
                 <path
-                  d="M 20 20 L 380 20 L 380 240 L 20 240 Z"
-                  fill={hoveredRt === 'RT 01' ? 'rgba(99,102,241,0.08)' : 'rgba(99,102,241,0.02)'}
+                  d="M 100 20 L 420 20 L 420 250 L 100 250 Z"
+                  fill={hoveredRt === 'RT 01' || hoveredRt === 'sektor-barat' ? 'rgba(99,102,241,0.08)' : 'rgba(99,102,241,0.02)'}
                   stroke="rgba(99,102,241,0.3)"
                   strokeWidth="2"
                   strokeDasharray="4 4"
                   className="transition-colors duration-200 cursor-pointer"
-                  onMouseEnter={() => setHoveredRt('RT 01')}
+                  onMouseEnter={() => setHoveredRt('sektor-barat')}
                   onMouseLeave={() => setHoveredRt(null)}
                 />
-                <text x="50" y="50" className="fill-indigo-400 font-black text-xs uppercase tracking-widest opacity-60">RT 01 (Barat)</text>
+                <text x="120" y="50" className="fill-indigo-400 font-black text-[9px] sm:text-xs uppercase tracking-wider opacity-60">Sektor Barat (RT 01, 05, 09, 13)</text>
 
-                {/* RT 02 Area - Top Right */}
+                {/* Sektor Utara Area - Top Right */}
                 <path
-                  d="M 380 20 L 780 20 L 780 240 L 380 240 Z"
-                  fill={hoveredRt === 'RT 02' ? 'rgba(16,185,129,0.08)' : 'rgba(16,185,129,0.02)'}
+                  d="M 420 20 L 780 20 L 780 250 L 420 250 Z"
+                  fill={hoveredRt === 'RT 02' || hoveredRt === 'sektor-utara' ? 'rgba(16,185,129,0.08)' : 'rgba(16,185,129,0.02)'}
                   stroke="rgba(16,185,129,0.3)"
                   strokeWidth="2"
                   strokeDasharray="4 4"
                   className="transition-colors duration-200 cursor-pointer"
-                  onMouseEnter={() => setHoveredRt('RT 02')}
+                  onMouseEnter={() => setHoveredRt('sektor-utara')}
                   onMouseLeave={() => setHoveredRt(null)}
                 />
-                <text x="410" y="50" className="fill-emerald-400 font-black text-xs uppercase tracking-widest opacity-60">RT 02 (Utara)</text>
+                <text x="440" y="50" className="fill-emerald-400 font-black text-[9px] sm:text-xs uppercase tracking-wider opacity-60">Sektor Utara (RT 02, 06, 10, 14)</text>
 
-                {/* RT 03 Area - Bottom Left */}
+                {/* Sektor Selatan Area - Bottom Left */}
                 <path
-                  d="M 20 240 L 380 240 L 380 480 L 20 480 Z"
-                  fill={hoveredRt === 'RT 03' ? 'rgba(245,158,11,0.08)' : 'rgba(245,158,11,0.02)'}
+                  d="M 100 250 L 420 250 L 420 480 L 100 480 Z"
+                  fill={hoveredRt === 'RT 03' || hoveredRt === 'sektor-selatan' ? 'rgba(245,158,11,0.08)' : 'rgba(245,158,11,0.02)'}
                   stroke="rgba(245,158,11,0.3)"
                   strokeWidth="2"
                   strokeDasharray="4 4"
                   className="transition-colors duration-200 cursor-pointer"
-                  onMouseEnter={() => setHoveredRt('RT 03')}
+                  onMouseEnter={() => setHoveredRt('sektor-selatan')}
                   onMouseLeave={() => setHoveredRt(null)}
                 />
-                <text x="50" y="270" className="fill-amber-400 font-black text-xs uppercase tracking-widest opacity-60">RT 03 (Selatan)</text>
+                <text x="120" y="290" className="fill-amber-400 font-black text-[9px] sm:text-xs uppercase tracking-wider opacity-60">Sektor Selatan (RT 03, 07, 11)</text>
 
-                {/* RT 04 Area - Bottom Right */}
+                {/* Sektor Timur Area - Bottom Right */}
                 <path
-                  d="M 380 240 L 780 240 L 780 480 L 380 480 Z"
-                  fill={hoveredRt === 'RT 04' ? 'rgba(244,63,94,0.08)' : 'rgba(244,63,94,0.02)'}
+                  d="M 420 250 L 780 250 L 780 480 L 420 480 Z"
+                  fill={hoveredRt === 'RT 04' || hoveredRt === 'sektor-timur' ? 'rgba(244,63,94,0.08)' : 'rgba(244,63,94,0.02)'}
                   stroke="rgba(244,63,94,0.3)"
                   strokeWidth="2"
                   strokeDasharray="4 4"
                   className="transition-colors duration-200 cursor-pointer"
-                  onMouseEnter={() => setHoveredRt('RT 04')}
+                  onMouseEnter={() => setHoveredRt('sektor-timur')}
                   onMouseLeave={() => setHoveredRt(null)}
                 />
-                <text x="410" y="270" className="fill-rose-400 font-black text-xs uppercase tracking-widest opacity-60">RT 04 (Timur)</text>
+                <text x="440" y="290" className="fill-rose-400 font-black text-[9px] sm:text-xs uppercase tracking-wider opacity-60">Sektor Timur (RT 04, 08, 12)</text>
 
-                {/* Main thoroughfare streets */}
-                <path d="M 380 0 L 380 500" stroke="currentColor" className="text-slate-200 dark:text-slate-800" strokeWidth="24" strokeLinecap="square" />
-                <path d="M 0 240 L 800 240" stroke="currentColor" className="text-slate-200 dark:text-slate-800" strokeWidth="24" strokeLinecap="square" />
+                {/* 1. Jl. Matraman Raya (Left main highway, x: 0 to 100, center is x:50) */}
+                <rect x="0" y="0" width="100" height="500" className="fill-slate-200 dark:fill-slate-800" />
+                <line x1="50" y1="0" x2="50" y2="500" stroke="currentColor" className="text-white dark:text-slate-600" strokeWidth="2" strokeDasharray="10 10" />
+                {/* TransJakarta special lane border */}
+                <line x1="90" y1="0" x2="90" y2="500" stroke="currentColor" className="text-red-500/30 dark:text-red-500/20" strokeWidth="3" />
+                <rect x="90" y="0" width="10" height="500" className="fill-red-500/10 dark:fill-red-500/5" />
+
+                {/* 2. Jl. Palmeriam I (Horizontal street crossing entire map from x:100 to 800 at y:250) */}
+                <path d="M 100 250 L 800 250" stroke="currentColor" className="text-slate-200 dark:text-slate-800" strokeWidth="24" strokeLinecap="square" />
+
+                {/* 3. Jl. Palmeriam II (Vertical street from y:0 to 500 at x:420) */}
+                <path d="M 420 0 L 420 500" stroke="currentColor" className="text-slate-200 dark:text-slate-800" strokeWidth="20" strokeLinecap="square" />
+
+                {/* 4. Jl. Palmeriam III (Vertical street from y:250 to 500 at x:700) */}
+                <path d="M 700 250 L 700 500" stroke="currentColor" className="text-slate-100 dark:text-slate-850" strokeWidth="16" strokeLinecap="square" />
+
+                {/* Alleys / Gang-gang */}
+                <path d="M 100 120 L 420 120" stroke="currentColor" className="text-slate-300 dark:text-slate-700" strokeWidth="8" strokeDasharray="4 4" />
+                <path d="M 420 380 L 800 380" stroke="currentColor" className="text-slate-300 dark:text-slate-700" strokeWidth="8" strokeDasharray="4 4" />
+
                 {/* Street Names */}
-                <text x="375" y="120" className="fill-slate-400 dark:fill-slate-500 font-extrabold text-[9px] uppercase tracking-wider" transform="rotate(-90 375 120)">Jl. Cempaka Utama</text>
-                <text x="120" y="244" className="fill-slate-400 dark:fill-slate-500 font-extrabold text-[9px] uppercase tracking-wider">Jl. Kenanga Raya</text>
+                <text x="35" y="250" className="fill-slate-400 dark:fill-slate-500 font-black text-[10px] uppercase tracking-widest" transform="rotate(-90 35 250)">Jl. Matraman Raya</text>
+                <text x="93" y="210" className="fill-red-500/60 dark:fill-red-400/50 font-black text-[8px] uppercase tracking-wider" transform="rotate(-90 93 210)">Jalur Busway</text>
+                
+                <text x="180" y="254" className="fill-slate-400 dark:fill-slate-500 font-extrabold text-[9px] uppercase tracking-wider">Jl. Palmeriam I</text>
+                <text x="415" y="120" className="fill-slate-400 dark:fill-slate-500 font-extrabold text-[9px] uppercase tracking-wider" transform="rotate(-90 415 120)">Jl. Palmeriam II</text>
+                <text x="695" y="340" className="fill-slate-400 dark:fill-slate-500 font-extrabold text-[9px] uppercase tracking-wider" transform="rotate(-90 695 340)">Jl. Palmeriam III</text>
+                
+                <text x="180" y="115" className="fill-slate-400 dark:fill-slate-500 font-medium text-[8px] uppercase tracking-wider">Gang Masjid</text>
+                <text x="500" y="375" className="fill-slate-400 dark:fill-slate-500 font-medium text-[8px] uppercase tracking-wider">Gang Pos RW</text>
               </svg>
 
               {/* HTML Floating Pins on the SVG Canvas */}
@@ -291,7 +424,7 @@ export default function InteractiveMap({ reports }: InteractiveMapProps) {
                   <h3 className="font-extrabold text-slate-800 dark:text-slate-100 text-lg leading-tight">{selectedFeature.name}</h3>
                   <div className="text-[10px] font-semibold text-slate-400 dark:text-slate-500 flex items-center">
                     <MapPin className="w-3 h-3 mr-1 text-slate-300 dark:text-slate-600" />
-                    RW 05 Mekar Wangi
+                    RW 07 Palmeriam
                   </div>
                 </div>
 
@@ -383,7 +516,7 @@ export default function InteractiveMap({ reports }: InteractiveMapProps) {
                   </p>
                 </div>
                 <div className="border-t border-slate-200/80 dark:border-slate-750 pt-3 text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">
-                  PORTAL WARGA RW 05
+                  PORTAL WARGA RW 07
                 </div>
               </motion.div>
             )}

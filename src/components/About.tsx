@@ -1,11 +1,16 @@
 import { Shield, BookOpen, Heart, Users, Map, Award } from 'lucide-react';
 import { motion } from 'motion/react';
 
-export default function About() {
+interface AboutProps {
+  rwTitle?: string;
+  rwSubTitle?: string;
+}
+
+export default function About({ rwTitle = 'RW 07', rwSubTitle = 'Palmeriam' }: AboutProps) {
   const structure = [
     {
       name: 'Bp. Bambang Hermawan',
-      role: 'Ketua RW 05',
+      role: `Ketua ${rwTitle}`,
       desc: 'Memimpin koordinasi seluruh RT, perwakilan resmi tingkat desa, dan penentu kebijakan lingkungan.',
       image: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=300'
     },
@@ -45,7 +50,17 @@ export default function About() {
     { name: 'RT 01', leader: 'Bp. Joko Priyono', kk: 112, desc: 'Meliputi area barat, didominasi komplek perumahan asri.' },
     { name: 'RT 02', leader: 'Bp. Ahmad Fauzi', kk: 98, desc: 'Meliputi area tengah, sentra perdagangan kecil warga dan UMKM.' },
     { name: 'RT 03', leader: 'Bp. Teddy Setiadi', kk: 125, desc: 'Meliputi area timur, lingkungan padat asri dekat perkebunan warga.' },
-    { name: 'RT 04', leader: 'Bp. M. Supriyadi', kk: 115, desc: 'Meliputi area selatan, dekat gerbang perbatasan luar dan pos ronda utama.' }
+    { name: 'RT 04', leader: 'Bp. M. Supriyadi', kk: 115, desc: 'Meliputi area selatan, dekat gerbang perbatasan luar dan pos ronda utama.' },
+    { name: 'RT 05', leader: 'Bp. Hendra Wijaya', kk: 104, desc: 'Meliputi area utara, lingkungan ramah anak dan taman komplek.' },
+    { name: 'RT 06', leader: 'Bp. Rudi Hermawan', kk: 110, desc: 'Meliputi area barat laut, dekat dengan fasilitas olahraga warga.' },
+    { name: 'RT 07', leader: 'Ibu Siti Aminah', kk: 95, desc: 'Meliputi area timur laut, aktif dengan kegiatan ketahanan pangan mandiri.' },
+    { name: 'RT 08', leader: 'Bp. Bambang Susilo', kk: 120, desc: 'Meliputi area sentral utara, lingkungan rukun aman.' },
+    { name: 'RT 09', leader: 'Bp. Agus Setiawan', kk: 105, desc: 'Meliputi area barat daya, dekat dengan mushola Al-Hidayah.' },
+    { name: 'RT 10', leader: 'Bp. Dedi Kurniawan', kk: 118, desc: 'Meliputi area tenggara, terkenal dengan bank sampah terpadu.' },
+    { name: 'RT 11', leader: 'Ibu Rina Suryani', kk: 99, desc: 'Meliputi area selatan timur, aktif dengan program daur ulang.' },
+    { name: 'RT 12', leader: 'Bp. Yusuf Ginanjar', kk: 113, desc: 'Meliputi area barat tengah, rukun tetangga dengan pos ronda aktif.' },
+    { name: 'RT 13', leader: 'Bp. Heri Prasetyo', kk: 108, desc: 'Meliputi area timur tengah, dekat dengan kebun hidroponik PKK.' },
+    { name: 'RT 14', leader: 'Bp. Ridwan Sani', kk: 122, desc: 'Meliputi area gerbang perbatasan barat, aman dan teratur.' }
   ];
 
   return (
@@ -61,11 +76,11 @@ export default function About() {
         >
           <Award className="w-8 h-8" />
         </motion.div>
-        <h1 className="text-3xl sm:text-5xl font-black text-slate-800 dark:text-slate-100 tracking-tight animate-fade-in">
-          Profil Pengurus RW 05
+        <h1 className="text-2xl sm:text-4xl font-display font-bold text-slate-800 dark:text-slate-100 tracking-tight animate-fade-in">
+          Profil Pengurus {rwTitle}
         </h1>
         <p className="text-slate-500 dark:text-slate-400 max-w-2xl mx-auto text-sm sm:text-base leading-relaxed">
-          Mengenal lebih dekat visi, misi, jajaran kepengurusan aktif, serta pembagian wilayah administratif Rukun Tetangga (RT) di lingkungan RW 05 Mekar Wangi.
+          Mengenal lebih dekat visi, misi, jajaran kepengurusan aktif, serta pembagian wilayah administratif Rukun Tetangga (RT) di lingkungan {rwTitle} {rwSubTitle}.
         </p>
       </section>
 
@@ -82,9 +97,9 @@ export default function About() {
             <div className="inline-flex p-2.5 bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 rounded-lg mb-4">
               <BookOpen className="w-6 h-6" />
             </div>
-            <h2 className="text-xl font-bold text-slate-800 dark:text-slate-100 mb-3">Visi RW 05</h2>
+            <h2 className="text-xl font-bold text-slate-800 dark:text-slate-100 mb-3">Visi {rwTitle}</h2>
             <p className="text-slate-600 dark:text-slate-300 leading-relaxed text-sm">
-              "Terwujudnya lingkungan RW 05 Mekar Wangi yang Rukun, Aman, Sejahtera, Sehat, dan Berkelanjutan melalui sinergi komunikasi digital yang transparan dan semangat gotong royong warga."
+              "Terwujudnya lingkungan {rwTitle} {rwSubTitle} yang Rukun, Aman, Sejahtera, Sehat, dan Berkelanjutan melalui sinergi komunikasi digital yang transparan dan semangat gotong royong warga."
             </p>
           </div>
           <div className="mt-6 border-t border-slate-100 dark:border-slate-700/50 pt-4 flex items-center text-xs text-slate-400 dark:text-slate-500 font-semibold">
@@ -104,7 +119,7 @@ export default function About() {
             <div className="inline-flex p-2.5 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 rounded-lg mb-4">
               <Heart className="w-6 h-6" />
             </div>
-            <h2 className="text-xl font-bold text-slate-800 dark:text-slate-100 mb-3">Misi RW 05</h2>
+            <h2 className="text-xl font-bold text-slate-800 dark:text-slate-100 mb-3">Misi {rwTitle}</h2>
             <ul className="space-y-2 text-slate-600 dark:text-slate-300 text-sm list-disc pl-5">
               <li>Meningkatkan sistem keamanan lingkungan yang aktif dan terintegrasi.</li>
               <li>Menyelenggarakan tata kelola keuangan kas RW yang transparan dan akuntabel.</li>
@@ -123,7 +138,7 @@ export default function About() {
       <section className="space-y-8">
         <div className="text-center space-y-2">
           <h2 className="text-2xl font-black text-slate-800 dark:text-slate-100">Struktur Kepengurusan</h2>
-          <p className="text-slate-500 dark:text-slate-400 text-xs sm:text-sm">Dedikasi para pengurus RW 05 dalam melayani kebutuhan administratif dan keamanan warga.</p>
+          <p className="text-slate-500 dark:text-slate-400 text-xs sm:text-sm">Dedikasi para pengurus {rwTitle} dalam melayani kebutuhan administratif dan keamanan warga.</p>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" id="about-structure-grid">
@@ -167,10 +182,10 @@ export default function About() {
               <Map className="w-6 h-6 mr-2 text-indigo-600 dark:text-indigo-400" />
               Pembagian Wilayah RT
             </h2>
-            <p className="text-slate-500 dark:text-slate-400 text-xs sm:text-sm">Rincian Ketua Rukun Tetangga (RT) yang bernaung di bawah wilayah koordinasi RW 05.</p>
+            <p className="text-slate-500 dark:text-slate-400 text-xs sm:text-sm">Rincian Ketua Rukun Tetangga (RT) yang bernaung di bawah wilayah koordinasi {rwTitle}.</p>
           </div>
           <span className="self-start md:self-center text-xs font-semibold bg-indigo-100 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 px-3 py-1 rounded-full border border-indigo-200/20">
-            Total 4 RT Pendukung
+            Total 14 RT Pendukung
           </span>
         </div>
 

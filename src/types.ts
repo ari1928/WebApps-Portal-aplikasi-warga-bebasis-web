@@ -2,6 +2,7 @@ export interface User {
   id: string;
   username: string;
   email: string;
+  password?: string;
   name: string;
   avatarUrl: string;
   role: 'citizen' | 'admin';
@@ -52,6 +53,7 @@ export interface Announcement {
   date: string;
   author: string;
   category: 'Penting' | 'Informasi' | 'Kegiatan';
+  imageUrl?: string;
 }
 
 export interface MapFeature {

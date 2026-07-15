@@ -12,12 +12,12 @@ interface FooterProps {
 
 export default function Footer({
   setActiveTab,
-  rwTitle = 'RW 05',
-  rwSubTitle = 'Mekar Wangi',
+  rwTitle = 'RW 07',
+  rwSubTitle = 'Palmeriam',
   rwLogoUrl = '',
-  contactAddress = 'Balai RW 05, Jl. Kenanga No. 12, Desa Mekar Wangi, RT 03/RW 05, Jawa Barat',
+  contactAddress = 'Balai RW 07, Jl. Palmeriam Raya, Kel. Palmeriam, Kec. Matraman, RT 03/RW 07, Jakarta Timur',
   contactPhone = '0811-2233-4455',
-  contactEmail = 'sekretariat@rw05.warga.id',
+  contactEmail = 'sekretariat@rw07.warga.id',
 }: FooterProps) {
   const currentYear = new Date().getFullYear();
 

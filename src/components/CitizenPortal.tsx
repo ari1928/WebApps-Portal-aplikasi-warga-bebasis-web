@@ -13,6 +13,7 @@ interface CitizenPortalProps {
   setNotifications: React.Dispatch<React.SetStateAction<Notification[]>>;
   usersList: User[];
   setUsersList: React.Dispatch<React.SetStateAction<User[]>>;
+  rwTitle?: string;
 }
 
 export default function CitizenPortal({
@@ -24,6 +25,7 @@ export default function CitizenPortal({
   setNotifications,
   usersList,
   setUsersList,
+  rwTitle = 'RW 07',
 }: CitizenPortalProps) {
   const [activeTab, setActiveTab] = useState<'profil' | 'lapor' | 'riwayat'>('profil');
   
@@ -145,7 +147,7 @@ export default function CitizenPortal({
       id: `notif-${Date.now()}`,
       userId: currentUser.id,
       title: 'Laporan Berhasil Terkirim',
-      message: `Laporan "${newTitle}" berhasil dikirimkan ke Admin RW 05 dan sedang menunggu verifikasi.`,
+      message: `Laporan "${newTitle}" berhasil dikirimkan ke Admin ${rwTitle} dan sedang menunggu verifikasi.`,
       date: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }),
       isRead: false,
       reportId: newReport.id
@@ -279,6 +281,16 @@ export default function CitizenPortal({
                         <option>RT 02</option>
                         <option>RT 03</option>
                         <option>RT 04</option>
+                        <option>RT 05</option>
+                        <option>RT 06</option>
+                        <option>RT 07</option>
+                        <option>RT 08</option>
+                        <option>RT 09</option>
+                        <option>RT 10</option>
+                        <option>RT 11</option>
+                        <option>RT 12</option>
+                        <option>RT 13</option>
+                        <option>RT 14</option>
                       </select>
                     </div>
                     <div>
@@ -380,6 +392,16 @@ export default function CitizenPortal({
                         <option>RT 02</option>
                         <option>RT 03</option>
                         <option>RT 04</option>
+                        <option>RT 05</option>
+                        <option>RT 06</option>
+                        <option>RT 07</option>
+                        <option>RT 08</option>
+                        <option>RT 09</option>
+                        <option>RT 10</option>
+                        <option>RT 11</option>
+                        <option>RT 12</option>
+                        <option>RT 13</option>
+                        <option>RT 14</option>
                       </select>
                     </div>
                   </div>
@@ -443,7 +465,7 @@ export default function CitizenPortal({
               >
                 <div>
                   <h2 className="text-lg font-black text-slate-800 dark:text-slate-100">Riwayat Pengaduan Saya</h2>
-                  <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">Berikut daftar keluhan yang telah Anda kirimkan berserta update status verifikasi dari Admin RW 05.</p>
+                  <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">Berikut daftar keluhan yang telah Anda kirimkan berserta update status verifikasi dari Admin {rwTitle}.</p>
                 </div>
 
                 {myReports.length === 0 ? (
